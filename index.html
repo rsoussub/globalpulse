@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GlobalPulse — News Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#FAFAF8;--bg2:#F2F1ED;--bg3:#E8E7E2;
+  --fg:#1A1A18;--fg2:#5A5A55;--fg3:#8A8A84;
+  --accent:#C84B31;--accent2:#2D6A4F;--accent3:#1B4965;
+  --border:#DDD9D0;--border2:#C8C4BA;
+  --card:#FFFFFF;--card-hover:#FDFCFA;
+  --tag-finance:#E8F0FE;--tag-finance-t:#1A56DB;
+  --tag-stocks:#FEF3C7;--tag-stocks-t:#92400E;
+  --tag-options:#F3E8FF;--tag-options-t:#7C3AED;
+  --tag-forex:#ECFDF5;--tag-forex-t:#065F46;
+  --tag-war:#FEE2E2;--tag-war-t:#991B1B;
+  --tag-election:#EDE9FE;--tag-election-t:#5B21B6;
+  --tag-sports:#DBEAFE;--tag-sports-t:#1E40AF;
+  --tag-money:#FFF7ED;--tag-money-t:#9A3412;
+  --tag-ai:#F0FDF4;--tag-ai-t:#166534;
+  --tag-excel:#F0F9FF;--tag-excel-t:#075985;
+  --shadow:0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.06);
+  --radius:8px;
+}
+[data-theme="dark"]{
+  --bg:#141413;--bg2:#1E1E1C;--bg3:#2A2A27;
+  --fg:#E8E7E2;--fg2:#A0A09A;--fg3:#6A6A64;
+  --border:#333330;--border2:#444440;
+  --card:#1C1C1A;--card-hover:#222220;
+  --accent:#E86B50;--accent2:#52B788;--accent3:#5FA8D3;
+  --tag-finance:#1E3A5F;--tag-finance-t:#93C5FD;
+  --tag-stocks:#422006;--tag-stocks-t:#FCD34D;
+  --tag-options:#2E1065;--tag-options-t:#C4B5FD;
+  --tag-forex:#064E3B;--tag-forex-t:#6EE7B7;
+  --tag-war:#450A0A;--tag-war-t:#FCA5A5;
+  --tag-election:#2E1065;--tag-election-t:#C4B5FD;
+  --tag-sports:#1E3A5F;--tag-sports-t:#93C5FD;
+  --tag-money:#431407;--tag-money-t:#FDBA74;
+  --tag-ai:#052E16;--tag-ai-t:#86EFAC;
+  --tag-excel:#0C4A6E;--tag-excel-t:#7DD3FC;
+  --shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+html{font-size:16px}
+body{
+  font-family:'DM Sans',sans-serif;
+  background:var(--bg);color:var(--fg);
+  line-height:1.5;min-height:100vh;
+}
+a{color:var(--accent3);text-decoration:none}
+a:hover{text-decoration:underline}
+
+.header{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;
+}
+.header-inner{
+  max-width:1400px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:60px;
+}
+.logo{
+  font-family:'Instrument Serif',serif;
+  font-size:1.5rem;color:var(--fg);letter-spacing:-0.02em;
+}
+.logo span{color:var(--accent)}
+.header-actions{display:flex;align-items:center;gap:12px}
+.btn{
+  font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;
+  padding:7px 14px;border-radius:var(--radius);cursor:pointer;
+  border:1px solid var(--border);background:var(--card);color:var(--fg);
+  transition:all 0.15s;display:inline-flex;align-items:center;gap:6px;
+}
+.btn:hover{background:var(--bg2);border-color:var(--border2)}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.btn svg{width:15px;height:15px}
+.theme-toggle{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:1px solid var(--border);
+  background:var(--card);color:var(--fg);font-size:1rem;
+  transition:all 0.15s;
+}
+.theme-toggle:hover{background:var(--bg2)}
+
+.filters-bar{
+  border-bottom:1px solid var(--border);
+  padding:0 2rem;background:var(--bg);
+}
+.filters-inner{
+  max-width:1400px;margin:0 auto;
+  display:flex;flex-direction:column;gap:8px;
+  padding:10px 0;
+}
+.filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.filter-label{
+  font-size:0.7rem;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.06em;
+  color:var(--fg3);min-width:72px;
+}
+.pill{
+  font-size:0.75rem;padding:4px 12px;
+  border-radius:20px;cursor:pointer;
+  border:1px solid var(--border);
+  background:transparent;color:var(--fg2);
+  font-family:'DM Sans',sans-serif;font-weight:500;
+  transition:all 0.15s;white-space:nowrap;
+}
+.pill:hover{background:var(--bg2);border-color:var(--border2)}
+.pill.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+.main{max-width:1400px;margin:0 auto;padding:1.5rem 2rem 4rem}
+
+.country-section{margin-bottom:2.5rem}
+.country-header{
+  display:flex;align-items:center;gap:10px;
+  margin-bottom:1rem;padding-bottom:8px;
+  border-bottom:2px solid var(--border);
+}
+.country-flag{font-size:1.4rem;line-height:1}
+.country-name{
+  font-family:'Instrument Serif',serif;
+  font-size:1.35rem;letter-spacing:-0.01em;
+}
+.country-count{
+  font-size:0.7rem;background:var(--bg2);
+  padding:2px 8px;border-radius:10px;
+  color:var(--fg3);font-weight:500;
+}
+
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:12px;
+}
+.news-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px 16px;
+  transition:all 0.15s;cursor:pointer;
+  display:flex;flex-direction:column;
+}
+.news-card:hover{
+  background:var(--card-hover);border-color:var(--border2);
+  box-shadow:var(--shadow);
+}
+.news-meta{
+  display:flex;align-items:center;gap:6px;
+  margin-bottom:8px;flex-wrap:wrap;
+}
+.category-tag{
+  font-size:0.65rem;font-weight:600;
+  padding:2px 8px;border-radius:4px;
+  text-transform:uppercase;letter-spacing:0.04em;
+}
+.cat-finance{background:var(--tag-finance);color:var(--tag-finance-t)}
+.cat-stocks{background:var(--tag-stocks);color:var(--tag-stocks-t)}
+.cat-options{background:var(--tag-options);color:var(--tag-options-t)}
+.cat-forex{background:var(--tag-forex);color:var(--tag-forex-t)}
+.cat-war{background:var(--tag-war);color:var(--tag-war-t)}
+.cat-election{background:var(--tag-election);color:var(--tag-election-t)}
+.cat-sports{background:var(--tag-sports);color:var(--tag-sports-t)}
+.cat-money{background:var(--tag-money);color:var(--tag-money-t)}
+.cat-ai{background:var(--tag-ai);color:var(--tag-ai-t)}
+.cat-excel{background:var(--tag-excel);color:var(--tag-excel-t)}
+.news-source{font-size:0.68rem;color:var(--fg3);font-weight:500}
+.news-time{font-size:0.68rem;color:var(--fg3)}
+.news-dot{width:3px;height:3px;border-radius:50%;background:var(--fg3);flex-shrink:0}
+.news-title{
+  font-size:0.92rem;font-weight:600;line-height:1.35;
+  margin-bottom:6px;color:var(--fg);
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.news-snippet{
+  font-size:0.8rem;color:var(--fg2);line-height:1.5;flex:1;
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+.news-link{
+  font-size:0.72rem;color:var(--accent);
+  font-weight:500;margin-top:8px;
+  display:inline-flex;align-items:center;gap:4px;
+}
+.news-link svg{width:11px;height:11px}
+
+.loading-state{text-align:center;padding:4rem 2rem;color:var(--fg3)}
+.spinner{
+  width:28px;height:28px;border:2.5px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin 0.7s linear infinite;margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.progress-bar{
+  max-width:400px;margin:16px auto;
+  background:var(--bg2);border-radius:10px;
+  height:6px;overflow:hidden;
+}
+.progress-fill{
+  height:100%;background:var(--accent);
+  border-radius:10px;transition:width 0.3s;width:0%;
+}
+
+.debug-panel{
+  margin:1rem 0;padding:12px 16px;
+  background:var(--bg2);border-radius:var(--radius);
+  font-family:'JetBrains Mono',monospace;font-size:0.72rem;
+  color:var(--fg2);max-height:200px;overflow-y:auto;
+  display:none;
+}
+.debug-panel.show{display:block}
+.debug-line{padding:2px 0;border-bottom:1px solid var(--border)}
+.debug-ok{color:#2D6A4F}
+.debug-err{color:#C84B31}
+.debug-toggle{
+  font-size:0.72rem;color:var(--fg3);cursor:pointer;
+  text-decoration:underline;margin-left:8px;
+}
+
+.status-bar{
+  display:flex;align-items:center;gap:8px;
+  margin-bottom:1.5rem;flex-wrap:wrap;
+}
+.status-text{font-size:0.75rem;color:var(--fg3)}
+.status-text strong{color:var(--fg2);font-weight:600}
+
+.empty-state{
+  text-align:center;padding:3rem;color:var(--fg3);font-size:0.85rem;
+}
+.error-banner{
+  background:var(--tag-war);color:var(--tag-war-t);
+  padding:12px 16px;border-radius:var(--radius);
+  font-size:0.82rem;margin-bottom:1rem;line-height:1.6;
+}
+
+@media(max-width:768px){
+  .header{padding:0 1rem}
+  .filters-bar{padding:0 1rem}
+  .main{padding:1rem}
+  .news-grid{grid-template-columns:1fr}
+  .filter-label{min-width:auto;width:100%;margin-bottom:2px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">Global<span>Pulse</span></div>
+    <div class="header-actions">
+      <button class="btn" id="refreshBtn" onclick="fetchAllNews()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0118.8-4.3L21.5 8"/><path d="M21.5 12.5a10 10 0 01-18.8 4.2L2.5 16"/></svg>
+        Refresh
+      </button>
+      <div class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle dark mode">&#9790;</div>
+    </div>
+  </div>
+</div>
+
+<div class="filters-bar">
+  <div class="filters-inner">
+    <div class="filter-row">
+      <span class="filter-label">Category</span>
+      <button class="pill active" data-category="all" onclick="setCategory(this)">All</button>
+      <button class="pill" data-category="finance" onclick="setCategory(this)">Finance</button>
+      <button class="pill" data-category="money" onclick="setCategory(this)">Money</button>
+      <button class="pill" data-category="stocks" onclick="setCategory(this)">Stocks</button>
+      <button class="pill" data-category="options" onclick="setCategory(this)">Options</button>
+      <button class="pill" data-category="forex" onclick="setCategory(this)">Forex</button>
+      <button class="pill" data-category="war" onclick="setCategory(this)">War/Conflict</button>
+      <button class="pill" data-category="election" onclick="setCategory(this)">Elections</button>
+      <button class="pill" data-category="sports" onclick="setCategory(this)">Sports</button>
+      <button class="pill" data-category="ai" onclick="setCategory(this)">AI</button>
+      <button class="pill" data-category="excel" onclick="setCategory(this)">MS Excel</button>
+    </div>
+    <div class="filter-row">
+      <span class="filter-label">Country</span>
+      <button class="pill active" data-country="all" onclick="setCountry(this)">All</button>
+      <button class="pill" data-country="us" onclick="setCountry(this)">USA</button>
+      <button class="pill" data-country="gb" onclick="setCountry(this)">UK</button>
+      <button class="pill" data-country="in" onclick="setCountry(this)">India</button>
+      <button class="pill" data-country="np" onclick="setCountry(this)">Nepal</button>
+      <button class="pill" data-country="ir" onclick="setCountry(this)">Iran</button>
+      <button class="pill" data-country="il" onclick="setCountry(this)">Israel</button>
+      <button class="pill" data-country="ae" onclick="setCountry(this)">UAE</button>
+      <button class="pill" data-country="mideast" onclick="setCountry(this)">Middle East</button>
+      <button class="pill" data-country="global" onclick="setCountry(this)">Tech/Global</button>
+    </div>
+  </div>
+</div>
+
+<div class="main" id="mainContent">
+  <div class="loading-state" id="initialLoading">
+    <div class="spinner"></div>
+    <div>Loading news from around the world...</div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div id="loadingStatus" style="font-size:0.75rem;margin-top:8px"></div>
+  </div>
+</div>
+
+<script>
+const COUNTRIES = {
+  us: { name: 'United States', flag: '\u{1F1FA}\u{1F1F8}' },
+  gb: { name: 'United Kingdom', flag: '\u{1F1EC}\u{1F1E7}' },
+  in: { name: 'India', flag: '\u{1F1EE}\u{1F1F3}' },
+  np: { name: 'Nepal', flag: '\u{1F1F3}\u{1F1F5}' },
+  ir: { name: 'Iran', flag: '\u{1F1EE}\u{1F1F7}' },
+  il: { name: 'Israel', flag: '\u{1F1EE}\u{1F1F1}' },
+  ae: { name: 'UAE', flag: '\u{1F1E6}\u{1F1EA}' },
+  mideast: { name: 'Middle East', flag: '\u{1F30D}' },
+  global: { name: 'Tech / Global', flag: '\u{1F4E1}' }
+};
+
+// RSS feeds - using well-known, reliably accessible feeds
+const RSS_FEEDS = {
+  us: [
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=^GSPC&region=US&lang=en-US', cat: 'stocks', src: 'Yahoo Finance' },
+    { url: 'https://www.cnbc.com/id/10000664/device/rss/rss.html', cat: 'finance', src: 'CNBC' },
+    { url: 'https://www.cnbc.com/id/10001147/device/rss/rss.html', cat: 'stocks', src: 'CNBC Investing' },
+    { url: 'https://www.cnbc.com/id/15839135/device/rss/rss.html', cat: 'money', src: 'CNBC Personal Finance' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Politics.xml', cat: 'election', src: 'NY Times' },
+    { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', cat: 'war', src: 'NY Times World' },
+    { url: 'https://www.espn.com/espn/rss/news', cat: 'sports', src: 'ESPN' },
+    { url: 'https://feeds.marketwatch.com/marketwatch/topstories/', cat: 'finance', src: 'MarketWatch' },
+    { url: 'https://feeds.reuters.com/reuters/businessNews', cat: 'finance', src: 'Reuters' },
+    { url: 'https://feeds.reuters.com/reuters/sportsNews', cat: 'sports', src: 'Reuters Sports' },
+    { url: 'https://feeds.reuters.com/reuters/worldNews', cat: 'war', src: 'Reuters World' },
+  ],
+  gb: [
+    { url: 'https://feeds.bbci.co.uk/news/business/rss.xml', cat: 'finance', src: 'BBC Business' },
+    { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', cat: 'war', src: 'BBC World' },
+    { url: 'https://feeds.bbci.co.uk/sport/rss.xml', cat: 'sports', src: 'BBC Sport' },
+    { url: 'https://feeds.bbci.co.uk/news/politics/rss.xml', cat: 'election', src: 'BBC Politics' },
+    { url: 'https://feeds.bbci.co.uk/news/england/rss.xml', cat: 'election', src: 'BBC England' },
+    { url: 'https://www.theguardian.com/uk/money/rss', cat: 'money', src: 'Guardian Money' },
+    { url: 'https://www.theguardian.com/uk/sport/rss', cat: 'sports', src: 'Guardian Sport' },
+    { url: 'https://www.theguardian.com/world/rss', cat: 'war', src: 'Guardian World' },
+  ],
+  in: [
+    { url: 'https://economictimes.indiatimes.com/markets/rssfeeds/1977021501.cms', cat: 'stocks', src: 'Economic Times' },
+    { url: 'https://economictimes.indiatimes.com/wealth/rssfeeds/837555174.cms', cat: 'money', src: 'ET Wealth' },
+    { url: 'https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms', cat: 'election', src: 'Times of India' },
+    { url: 'https://timesofindia.indiatimes.com/rssfeeds/-2128936835.cms', cat: 'sports', src: 'TOI Sports' },
+    { url: 'https://www.thehindu.com/news/national/feeder/default.rss', cat: 'election', src: 'The Hindu' },
+    { url: 'https://www.thehindu.com/business/feeder/default.rss', cat: 'finance', src: 'The Hindu Biz' },
+    { url: 'https://www.ndtv.com/rss/top-stories', cat: 'war', src: 'NDTV' },
+  ],
+  np: [
+    // Stock/Market sources
+    { url: 'https://english.onlinekhabar.com/feed', cat: 'stocks', src: 'Online Khabar' },
+    // General/Other category sources (RSS feeds)
+    { url: 'https://myrepublica.nagariknetwork.com/feed', cat: 'election', src: 'myRepublica' },
+    { url: 'https://thehimalayantimes.com/feed', cat: 'election', src: 'Himalayan Times' },
+  ],
+  ir: [
+    { url: 'https://www.tehrantimes.com/rss', cat: 'election', src: 'Tehran Times' },
+    { url: 'https://en.irna.ir/rss', cat: 'war', src: 'IRNA' },
+  ],
+  il: [
+    { url: 'https://www.jpost.com/rss/rssfeedsfrontpage.aspx', cat: 'war', src: 'Jerusalem Post' },
+    { url: 'https://www.timesofisrael.com/feed/', cat: 'war', src: 'Times of Israel' },
+  ],
+  ae: [
+    { url: 'https://gulfnews.com/rss/uae', cat: 'finance', src: 'Gulf News' },
+    { url: 'https://www.khaleejtimes.com/rss', cat: 'finance', src: 'Khaleej Times' },
+  ],
+  mideast: [
+    { url: 'https://www.aljazeera.com/xml/rss/all.xml', cat: 'war', src: 'Al Jazeera' },
+    { url: 'https://english.alarabiya.net/tools/rss', cat: 'election', src: 'Al Arabiya' },
+  ],
+  global: [
+    // AI News
+    { url: 'https://www.artificialintelligence-news.com/feed/rss/', cat: 'ai', src: 'AI News' },
+    { url: 'https://blog.google/technology/ai/rss/', cat: 'ai', src: 'Google AI Blog' },
+    { url: 'https://news.mit.edu/rss/topic/artificial-intelligence2', cat: 'ai', src: 'MIT AI News' },
+    { url: 'https://aimagazine.com/rss/customised/all', cat: 'ai', src: 'AI Magazine' },
+    { url: 'https://www.innovationnewsnetwork.com/category/artificial-intelligence/feed/', cat: 'ai', src: 'Innovation News' },
+    { url: 'https://venturebeat.com/category/ai/feed/', cat: 'ai', src: 'VentureBeat AI' },
+    { url: 'https://openai.com/news/rss.xml', cat: 'ai', src: 'OpenAI' },
+    // MS Excel
+    { url: 'https://techcommunity.microsoft.com/plugins/custom/microsoft/o365/custom-blog-rss?board=ExcelBlog&size=10', cat: 'excel', src: 'MS Excel Blog' },
+  ],
+};
+
+const CATEGORY_KEYWORDS = {
+  finance: ['finance','economy','economic','bank','central bank','gdp','inflation','interest rate','fiscal','monetary','imf','world bank','debt','bond','yield','treasury','federal reserve','rbi','ecb','revenue','profit','quarterly','ird','inland revenue','tax clearance','vat','excise','customs','revenue collection','pan','taxpayer'],
+  money: ['money','personal finance','savings','investment tip','wealth','tax','income tax','retirement','pension','insurance','loan','mortgage','credit card','budget','salary','wage','tax return','tax filing','tds','tax deduction'],
+  stocks: ['stock','share price','equity','s&p','nasdaq','dow jones','nifty','sensex','ipo','earnings','market cap','bull market','bear market','rally','crash','dividend','index fund','bse','nyse','ftse','wall street','nepse','share','bonus share','right share','ipo','fpo','hydropower','laghubitta','microfinance','broker','demat','meroshare','floorsheet','turnover','circuit','sub-index','sectoral'],
+  options: ['option','options trading','derivative','put option','call option','strike price','expiry','volatility','vix','futures','swap','hedge','straddle','strangle'],
+  forex: ['forex','currency','exchange rate','dollar','euro','pound','yen','rupee','dirham','rial','fx market','usd','eur','gbp','jpy','inr','aed','forex trading'],
+  war: ['war','conflict','military','attack','strike','bomb','missile','ceasefire','troops','army','navy','defense','defence','battle','invasion','hamas','hezbollah','casualt','weapon','sanction','nuclear','drone','airstrike','siege','refugee','hostage','gaza','ukraine','russia'],
+  election: ['election','vote','ballot','campaign','candidate','poll','parliament','congress','senate','minister','president','governor','political','politics','party','coalition','opposition','legislation','law','bill','reform','democrat','republican','bjp','labour','conservative'],
+  sports: ['sport','football','soccer','cricket','basketball','tennis','golf','nba','nfl','premier league','ipl','fifa','olympic','championship','tournament','match result','game','score','goal','win','defeat','playoff','league','athlete','coach','epl','la liga','serie a','world cup'],
+  ai: ['artificial intelligence','ai','machine learning','deep learning','neural network','llm','large language model','chatgpt','gpt','openai','anthropic','claude','gemini','copilot','generative ai','gen ai','transformer','nlp','computer vision','reinforcement learning','diffusion model','ai model','ai safety','ai regulation','ai ethics','foundation model','multimodal','agi'],
+  excel: ['excel','spreadsheet','xlsx','pivot table','vlookup','xlookup','power query','power pivot','vba','macro','formula','conditional formatting','data validation','microsoft 365','office 365','ms office','worksheet','workbook'],
+};
+
+// Nepal-specific HTML scraper sites (no RSS feeds available)
+const SCRAPE_SITES = [
+  {
+    url: 'https://news.nepsetrading.com/?lang=en',
+    country: 'np', cat: 'stocks', src: 'NEPSE Trading',
+    baseUrl: 'https://news.nepsetrading.com',
+    selectors: {
+      articles: 'a[href*="nepsetrading.com"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://www.sharesansar.com/news-page',
+    country: 'np', cat: 'stocks', src: 'ShareSansar',
+    baseUrl: 'https://www.sharesansar.com',
+    selectors: {
+      articles: 'a[href*="/newsdetail/"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://merolagani.com/NewsList.aspx',
+    country: 'np', cat: 'stocks', src: 'Merolagani',
+    baseUrl: 'https://merolagani.com',
+    selectors: {
+      articles: 'a[href*="NewsDetail"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://ird.gov.np/category/notice/',
+    country: 'np', cat: 'finance', src: 'IRD Nepal',
+    baseUrl: 'https://ird.gov.np',
+    selectors: {
+      articles: 'a[href*="/notice/"], a[href*="category/notice"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://www.therundown.ai/',
+    country: 'global', cat: 'ai', src: 'The Rundown AI',
+    baseUrl: 'https://www.therundown.ai',
+    selectors: {
+      articles: 'a[href*="/p/"], article a',
+      titleFromText: true,
+    }
+  },
+];
+
+// Scrape HTML pages for news headlines
+async function scrapeHtmlPage(site) {
+  const proxies = [
+    ...(WORKER_URL ? [(u) => `${WORKER_URL}?url=${encodeURIComponent(u)}`] : []),
+    (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+    (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+
+  for (const makeUrl of proxies) {
+    try {
+      const proxyUrl = makeUrl(site.url);
+      const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+      if (!resp.ok) continue;
+
+      let html;
+      const contentType = resp.headers.get('content-type') || '';
+      if (contentType.includes('json')) {
+        const data = await resp.json();
+        html = data.contents || '';
+      } else {
+        html = await resp.text();
+      }
+
+      if (!html || html.length < 200) continue;
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const articles = [];
+      const seen = new Set();
+
+      // Generic link extraction with various selectors
+      const selectors = [
+        site.selectors.articles,
+        'article a', '.news-item a', '.post-title a',
+        'h2 a', 'h3 a', '.card a',
+      ];
+
+      for (const sel of selectors) {
+        try {
+          const links = doc.querySelectorAll(sel);
+          links.forEach(a => {
+            let title = a.textContent?.trim() || a.getAttribute('title') || '';
+            title = title.replace(/\s+/g, ' ').trim();
+            if (title.length < 10 || title.length > 300) return;
+            if (seen.has(title.substring(0, 40).toLowerCase())) return;
+            seen.add(title.substring(0, 40).toLowerCase());
+
+            let link = a.getAttribute('href') || '';
+            if (link.startsWith('/')) link = site.baseUrl + link;
+            if (!link.startsWith('http')) return;
+
+            // Skip navigation/utility links
+            if (/login|signup|register|about|contact|privacy|terms|adverti/i.test(link)) return;
+
+            articles.push({
+              title, link,
+              description: '',
+              pubDate: new Date(),
+              source: site.src,
+              country: site.country,
+              category: classifyArticle(title, site.cat),
+            });
+          });
+        } catch(e) {}
+        if (articles.length >= 5) break;
+      }
+
+      if (articles.length > 0) {
+        log(`${site.src} (scrape): ${articles.length} headlines`, true);
+        return articles;
+      }
+    } catch(e) {
+      log(`${site.src} (scrape): ${e.message}`, false);
+    }
+  }
+
+  log(`${site.src} (scrape): ALL METHODS FAILED`, false);
+  return [];
+}
+
+let allNews = {};
+let activeCategory = 'all';
+let activeCountry = 'all';
+let lastRefresh = null;
+let debugLog = [];
+
+// ============================================================
+// CONFIGURATION: Set your Cloudflare Worker URL here
+// ============================================================
+// After deploying the Worker, paste your URL below.
+// Example: 'https://rss-proxy.yourname.workers.dev'
+// Leave as '' to use free public proxies as fallback.
+const WORKER_URL = 'https://rss-proxy.rsoussubedi.workers.dev';
+// ============================================================
+
+// Strategy priority:
+// 1. Your own Cloudflare Worker (if WORKER_URL is set) — most reliable
+// 2. rss2json.com — free, 10k req/day
+// 3. allorigins.win — free CORS proxy
+// 4. corsproxy.io — free CORS proxy
+
+async function fetchViaWorker(url) {
+  if (!WORKER_URL) throw new Error('Worker not configured');
+  const proxyUrl = `${WORKER_URL}?url=${encodeURIComponent(url)}`;
+  const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+  if (!resp.ok) throw new Error(`Worker HTTP ${resp.status}`);
+  const text = await resp.text();
+  return parseRssXml(text);
+}
+
+async function fetchViaRss2Json(url) {
+  const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+  const resp = await fetch(apiUrl, { signal: AbortSignal.timeout(15000) });
+  if (!resp.ok) throw new Error(`rss2json HTTP ${resp.status}`);
+  const data = await resp.json();
+  if (data.status !== 'ok') throw new Error(`rss2json status: ${data.status}`);
+  return data.items.map(item => ({
+    title: item.title || '',
+    link: item.link || '',
+    description: (item.description || '').replace(/<[^>]*>/g, '').substring(0, 250),
+    pubDate: item.pubDate ? new Date(item.pubDate) : new Date(),
+  }));
+}
+
+async function fetchViaProxy(url, proxyBase) {
+  const proxyUrl = proxyBase + encodeURIComponent(url);
+  const resp = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+  if (!resp.ok) throw new Error(`Proxy HTTP ${resp.status}`);
+  const text = await resp.text();
+  return parseRssXml(text);
+}
+
+async function fetchViaAllOrigins(url) {
+  const apiUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  const resp = await fetch(apiUrl, { signal: AbortSignal.timeout(15000) });
+  if (!resp.ok) throw new Error(`allorigins HTTP ${resp.status}`);
+  const data = await resp.json();
+  if (!data.contents) throw new Error('allorigins empty');
+  return parseRssXml(data.contents);
+}
+
+function parseRssXml(text) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(text, 'text/xml');
+  const err = doc.querySelector('parsererror');
+  if (err) throw new Error('XML parse error');
+  const items = doc.querySelectorAll('item, entry');
+  if (items.length === 0) throw new Error('No items found in feed');
+  const results = [];
+  items.forEach((item, i) => {
+    if (i >= 15) return;
+    const title = item.querySelector('title')?.textContent?.trim() || '';
+    let link = '';
+    const linkEl = item.querySelector('link');
+    if (linkEl) {
+      link = linkEl.getAttribute('href') || linkEl.textContent?.trim() || '';
+    }
+    const desc = (item.querySelector('description, summary, content\\:encoded, content')?.textContent?.trim() || '');
+    const pubStr = item.querySelector('pubDate, published, updated, dc\\:date')?.textContent?.trim() || '';
+    results.push({
+      title,
+      link,
+      description: desc.replace(/<[^>]*>/g, '').substring(0, 250),
+      pubDate: pubStr ? new Date(pubStr) : new Date(),
+    });
+  });
+  return results;
+}
+
+function classifyArticle(text, defaultCategory) {
+  const lower = text.toLowerCase();
+  let bestCat = defaultCategory;
+  let bestScore = 0;
+  for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    let score = 0;
+    for (const kw of keywords) {
+      if (lower.includes(kw)) score++;
+    }
+    if (score > bestScore) { bestScore = score; bestCat = cat; }
+  }
+  return bestCat;
+}
+
+function timeAgo(date) {
+  if (!(date instanceof Date) || isNaN(date)) return '';
+  const diff = (Date.now() - date.getTime()) / 1000;
+  if (diff < 0) return 'just now';
+  if (diff < 60) return 'just now';
+  if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+  if (diff < 86400) return Math.floor(diff / 3600) + 'h ago';
+  if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function log(msg, ok) {
+  debugLog.push({ msg, ok, time: new Date().toLocaleTimeString() });
+}
+
+async function fetchFeed(feedConfig, countryCode) {
+  const methods = [
+    ...(WORKER_URL ? [{ name: 'cf-worker', fn: () => fetchViaWorker(feedConfig.url) }] : []),
+    { name: 'rss2json', fn: () => fetchViaRss2Json(feedConfig.url) },
+    { name: 'allorigins', fn: () => fetchViaAllOrigins(feedConfig.url) },
+    { name: 'corsproxy', fn: () => fetchViaProxy(feedConfig.url, 'https://corsproxy.io/?') },
+  ];
+
+  for (const method of methods) {
+    try {
+      const items = await method.fn();
+      if (items.length === 0) continue;
+      log(`${feedConfig.src} via ${method.name}: ${items.length} items`, true);
+      return items.map(item => ({
+        ...item,
+        source: feedConfig.src,
+        country: countryCode,
+        category: classifyArticle(item.title + ' ' + item.description, feedConfig.cat),
+      }));
+    } catch (e) {
+      log(`${feedConfig.src} via ${method.name}: ${e.message}`, false);
+    }
+  }
+
+  log(`${feedConfig.src}: ALL METHODS FAILED`, false);
+  return [];
+}
+
+async function fetchAllNews() {
+  const btn = document.getElementById('refreshBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:14px;height:14px;margin:0;border-width:2px"></div> Loading...';
+
+  debugLog = [];
+  allNews = {};
+
+  const allFeeds = [];
+  for (const [countryCode, feeds] of Object.entries(RSS_FEEDS)) {
+    for (const feed of feeds) {
+      allFeeds.push({ feed, countryCode });
+    }
+  }
+
+  const totalFeeds = allFeeds.length;
+  let completed = 0;
+
+  const main = document.getElementById('mainContent');
+  main.innerHTML = `
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <div>Fetching from ${totalFeeds} news sources...</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div id="loadingStatus" style="font-size:0.75rem;margin-top:8px;color:var(--fg3)"></div>
+    </div>`;
+
+  // Process feeds in batches of 6 to avoid overwhelming the proxy
+  const BATCH_SIZE = 6;
+  for (let i = 0; i < allFeeds.length; i += BATCH_SIZE) {
+    const batch = allFeeds.slice(i, i + BATCH_SIZE);
+    const results = await Promise.allSettled(
+      batch.map(({ feed, countryCode }) => fetchFeed(feed, countryCode))
+    );
+
+    for (const result of results) {
+      completed++;
+      if (result.status === 'fulfilled' && result.value.length > 0) {
+        const cc = result.value[0].country;
+        if (!allNews[cc]) allNews[cc] = [];
+        allNews[cc].push(...result.value);
+      }
+    }
+
+    const pct = Math.round((completed / totalFeeds) * 100);
+    const pf = document.getElementById('progressFill');
+    const ls = document.getElementById('loadingStatus');
+    if (pf) pf.style.width = pct + '%';
+    if (ls) ls.textContent = `${completed}/${totalFeeds} feeds processed`;
+  }
+
+  // Now scrape HTML sites (Nepal stock sites without RSS)
+  {
+    const ls = document.getElementById('loadingStatus');
+    if (ls) ls.textContent = `Scraping Nepal stock news sites...`;
+    const scrapeResults = await Promise.allSettled(
+      SCRAPE_SITES.map(site => scrapeHtmlPage(site))
+    );
+    for (const result of scrapeResults) {
+      if (result.status === 'fulfilled' && result.value.length > 0) {
+        const cc = result.value[0].country;
+        if (!allNews[cc]) allNews[cc] = [];
+        allNews[cc].push(...result.value);
+      }
+    }
+  }
+
+  // Deduplicate and sort
+  for (const code in allNews) {
+    allNews[code].sort((a, b) => b.pubDate - a.pubDate);
+    const seen = new Set();
+    allNews[code] = allNews[code].filter(a => {
+      const key = a.title.substring(0, 50).toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return a.title.length > 5;
+    });
+  }
+
+  lastRefresh = new Date();
+  renderNews();
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0118.8-4.3L21.5 8"/><path d="M21.5 12.5a10 10 0 01-18.8 4.2L2.5 16"/></svg> Refresh';
+}
+
+function renderNews() {
+  const main = document.getElementById('mainContent');
+  let html = '';
+
+  const totalArticles = Object.values(allNews).reduce((s, a) => s + a.length, 0);
+  const failCount = debugLog.filter(d => !d.ok).length;
+  const okCount = debugLog.filter(d => d.ok).length;
+
+  // Status bar
+  html += `<div class="status-bar">
+    <span class="status-text"><strong>${totalArticles}</strong> articles from <strong>${okCount}</strong> feeds</span>
+    <span class="status-text">&middot; Last refresh: <strong>${lastRefresh ? lastRefresh.toLocaleTimeString() : '-'}</strong></span>
+    ${failCount > 0 ? `<span class="debug-toggle" onclick="toggleDebug()">Show debug log (${failCount} errors)</span>` : ''}
+  </div>`;
+
+  // Debug panel
+  html += `<div class="debug-panel" id="debugPanel">`;
+  for (const d of debugLog) {
+    html += `<div class="debug-line ${d.ok ? 'debug-ok' : 'debug-err'}">[${d.time}] ${d.ok ? '\u2713' : '\u2717'} ${escapeHtml(d.msg)}</div>`;
+  }
+  html += '</div>';
+
+  if (totalArticles === 0) {
+    html += `<div class="error-banner">
+      <strong>No articles loaded.</strong> This typically happens when:
+      <br>1. CORS proxies (rss2json.com, allorigins.win) are temporarily down
+      <br>2. Your network/VPN blocks these proxy services
+      <br>3. Ad blocker is interfering with fetch requests
+      <br><br><strong>Permanent fix:</strong> Deploy the included Cloudflare Worker (free, 5 min setup) and set your WORKER_URL in the HTML file. This eliminates all proxy dependency.
+      <br><br>Quick fix: Disable ad blocker, try a different network, or click Refresh.
+      <br>Click "Show debug log" above to see per-feed status.
+    </div>`;
+  }
+
+  const countryOrder = activeCountry === 'all' ? Object.keys(COUNTRIES) : [activeCountry];
+  let anyContent = false;
+
+  for (const code of countryOrder) {
+    const articles = (allNews[code] || []).filter(a =>
+      activeCategory === 'all' || a.category === activeCategory
+    );
+    if (articles.length === 0) continue;
+    anyContent = true;
+    const info = COUNTRIES[code];
+
+    html += `<div class="country-section">
+      <div class="country-header">
+        <span class="country-flag">${info.flag}</span>
+        <span class="country-name">${info.name}</span>
+        <span class="country-count">${articles.length} articles</span>
+      </div>
+      <div class="news-grid">`;
+
+    for (const article of articles.slice(0, 15)) {
+      const safeLink = escapeHtml(article.link);
+      html += `<div class="news-card" onclick="window.open('${safeLink}','_blank')">
+        <div class="news-meta">
+          <span class="category-tag cat-${article.category}">${article.category}</span>
+          <span class="news-dot"></span>
+          <span class="news-source">${escapeHtml(article.source)}</span>
+          <span class="news-dot"></span>
+          <span class="news-time">${timeAgo(article.pubDate)}</span>
+        </div>
+        <div class="news-title">${escapeHtml(article.title)}</div>
+        <div class="news-snippet">${escapeHtml(article.description)}</div>
+        <span class="news-link">Read full article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg></span>
+      </div>`;
+    }
+
+    html += '</div></div>';
+  }
+
+  if (totalArticles > 0 && !anyContent) {
+    html += '<div class="empty-state">No articles match the selected filters. Try a different category or country.</div>';
+  }
+
+  main.innerHTML = html;
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function setCategory(el) {
+  document.querySelectorAll('[data-category]').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  activeCategory = el.dataset.category;
+  renderNews();
+}
+
+function setCountry(el) {
+  document.querySelectorAll('[data-country]').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  activeCountry = el.dataset.country;
+  renderNews();
+}
+
+function toggleDebug() {
+  document.getElementById('debugPanel')?.classList.toggle('show');
+}
+
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+  document.getElementById('themeBtn').innerHTML = isDark ? '&#9790;' : '&#9728;';
+  try { localStorage.setItem('theme', isDark ? 'light' : 'dark'); } catch(e) {}
+}
+
+(function() {
+  try {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.getElementById('themeBtn').innerHTML = '&#9728;';
+    }
+  } catch(e) {}
+})();
+
+// Start fetching
+fetchAllNews();
+</script>
+</body>
+</html>
