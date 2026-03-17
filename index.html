@@ -245,6 +245,107 @@ a:hover{text-decoration:underline}
   .news-grid{grid-template-columns:1fr}
   .filter-label{min-width:auto;width:100%;margin-bottom:2px}
 }
+
+/* Read/unread card states */
+.news-card.read{opacity:0.45;border-style:dashed}
+.news-card.read:hover{opacity:0.7}
+.news-card.read .news-title{text-decoration:line-through;text-decoration-color:var(--fg3)}
+
+/* Modal overlay */
+.modal-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.45);z-index:1000;
+  display:flex;align-items:center;justify-content:center;
+  padding:1rem;animation:fadeIn 0.15s;
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:24px;
+  max-width:420px;width:100%;
+  box-shadow:0 8px 30px rgba(0,0,0,0.12);
+}
+.modal-title{font-size:1rem;font-weight:600;color:var(--fg);margin-bottom:6px}
+.modal-subtitle{font-size:0.82rem;color:var(--fg2);margin-bottom:18px;line-height:1.5}
+.modal-actions{display:flex;gap:10px}
+.modal-btn{
+  flex:1;padding:10px 16px;border-radius:var(--radius);
+  font-family:'DM Sans',sans-serif;font-size:0.82rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);
+  background:var(--card);color:var(--fg);transition:all 0.15s;
+}
+.modal-btn:hover{background:var(--bg2)}
+.modal-btn-primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.modal-btn-primary:hover{opacity:0.9}
+
+/* Reading dashboard panel */
+.dash-overlay{
+  position:fixed;top:0;right:0;bottom:0;
+  width:420px;max-width:100%;z-index:999;
+  background:var(--card);border-left:1px solid var(--border);
+  box-shadow:-4px 0 20px rgba(0,0,0,0.08);
+  overflow-y:auto;animation:slideIn 0.2s;
+}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.dash-header{
+  position:sticky;top:0;background:var(--card);
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:1;
+}
+.dash-title{font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--fg)}
+.dash-close{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:1px solid var(--border);
+  background:var(--card);color:var(--fg);font-size:1.1rem;
+  transition:all 0.15s;
+}
+.dash-close:hover{background:var(--bg2)}
+.dash-body{padding:16px 20px}
+.dash-period-tabs{
+  display:flex;gap:4px;margin-bottom:16px;
+}
+.dash-period-tab{
+  font-size:0.72rem;padding:4px 12px;border-radius:20px;
+  cursor:pointer;border:1px solid var(--border);
+  background:transparent;color:var(--fg2);
+  font-family:'DM Sans',sans-serif;font-weight:500;transition:all 0.15s;
+}
+.dash-period-tab:hover{background:var(--bg2)}
+.dash-period-tab.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.dash-stat-grid{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;
+}
+.dash-stat{
+  background:var(--bg2);border-radius:var(--radius);
+  padding:12px;
+}
+.dash-stat-label{font-size:0.68rem;color:var(--fg3);text-transform:uppercase;letter-spacing:0.04em}
+.dash-stat-val{font-size:1.3rem;font-weight:600;color:var(--fg);margin-top:2px}
+.dash-cat-bar{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 0;border-bottom:1px solid var(--border);
+}
+.dash-cat-name{font-size:0.78rem;color:var(--fg2);min-width:70px}
+.dash-cat-fill-wrap{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.dash-cat-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.3s}
+.dash-cat-count{font-size:0.72rem;color:var(--fg3);min-width:24px;text-align:right}
+.dash-section-title{
+  font-size:0.75rem;font-weight:600;text-transform:uppercase;
+  letter-spacing:0.04em;color:var(--fg3);margin:20px 0 10px;
+}
+.dash-history-item{
+  display:flex;gap:8px;padding:8px 0;
+  border-bottom:1px solid var(--border);
+  font-size:0.78rem;
+}
+.dash-history-item:last-child{border-bottom:none}
+.dash-history-date{color:var(--fg3);min-width:44px;font-size:0.7rem}
+.dash-history-title{color:var(--fg2);flex:1;cursor:pointer}
+.dash-history-title:hover{color:var(--accent);text-decoration:underline}
+.dash-history-cat{font-size:0.65rem;padding:1px 6px;border-radius:3px}
+.dash-empty{font-size:0.82rem;color:var(--fg3);text-align:center;padding:2rem 0}
 </style>
 </head>
 <body>
@@ -253,6 +354,10 @@ a:hover{text-decoration:underline}
   <div class="header-inner">
     <div class="logo">Global<span>Pulse</span></div>
     <div class="header-actions">
+      <button class="btn" id="dashBtn" onclick="toggleDashboard()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        <span id="dashBtnLabel">Tracker</span>
+      </button>
       <button class="btn" id="refreshBtn" onclick="fetchAllNews()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6"/><path d="M2.5 22v-6h6"/><path d="M2.5 11.5a10 10 0 0118.8-4.3L21.5 8"/><path d="M21.5 12.5a10 10 0 01-18.8 4.2L2.5 16"/></svg>
         Refresh
@@ -542,7 +647,7 @@ let debugLog = [];
 // After deploying the Worker, paste your URL below.
 // Example: 'https://rss-proxy.yourname.workers.dev'
 // Leave as '' to use free public proxies as fallback.
-const WORKER_URL = 'https://rss-proxy.rsoussubedi.workers.dev';
+const WORKER_URL = '';
 // ============================================================
 
 // Strategy priority:
@@ -817,13 +922,16 @@ function renderNews() {
 
     for (const article of articles.slice(0, 15)) {
       const safeLink = escapeHtml(article.link);
-      html += `<div class="news-card" onclick="window.open('${safeLink}','_blank')">
+      const articleId = hashArticle(article.title);
+      const isRead = isArticleRead(articleId);
+      html += `<div class="news-card${isRead ? ' read' : ''}" onclick="openArticle('${safeLink}', '${escapeHtml(article.title).replace(/'/g,"\\'")}', '${article.category}', '${articleId}')">
         <div class="news-meta">
           <span class="category-tag cat-${article.category}">${article.category}</span>
           <span class="news-dot"></span>
           <span class="news-source">${escapeHtml(article.source)}</span>
           <span class="news-dot"></span>
           <span class="news-time">${timeAgo(article.pubDate)}</span>
+          ${isRead ? '<span class="news-dot"></span><span style="font-size:0.65rem;color:var(--accent2);font-weight:600">READ</span>' : ''}
         </div>
         <div class="news-title">${escapeHtml(article.title)}</div>
         <div class="news-snippet">${escapeHtml(article.description)}</div>
@@ -885,6 +993,236 @@ function toggleTheme() {
 
 // Start fetching
 fetchAllNews();
+
+// ============================================================
+// READING TRACKER SYSTEM
+// ============================================================
+
+const STORAGE_KEY = 'globalpulse_read_history';
+let pendingArticle = null;
+
+function getReadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+function saveReadHistory(history) {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+}
+
+function hashArticle(title) {
+  let h = 0;
+  for (let i = 0; i < title.length; i++) {
+    h = ((h << 5) - h) + title.charCodeAt(i);
+    h |= 0;
+  }
+  return 'a' + Math.abs(h).toString(36);
+}
+
+function isArticleRead(articleId) {
+  return getReadHistory().some(r => r.id === articleId);
+}
+
+function openArticle(url, title, category, articleId) {
+  window.open(url, '_blank');
+  if (isArticleRead(articleId)) return;
+  pendingArticle = { url, title, category, id: articleId, time: new Date().toISOString() };
+  // Show modal when user returns to this tab
+  document.addEventListener('visibilitychange', onReturnToTab);
+}
+
+function onReturnToTab() {
+  if (document.visibilityState === 'visible' && pendingArticle) {
+    document.removeEventListener('visibilitychange', onReturnToTab);
+    showReadModal();
+  }
+}
+
+function showReadModal() {
+  if (!pendingArticle) return;
+  const modal = document.getElementById('readModal');
+  document.getElementById('modalArticleTitle').textContent = pendingArticle.title;
+  modal.style.display = 'flex';
+}
+
+function confirmRead() {
+  if (pendingArticle) {
+    const history = getReadHistory();
+    history.push({
+      id: pendingArticle.id,
+      title: pendingArticle.title,
+      url: pendingArticle.url,
+      category: pendingArticle.category,
+      readAt: pendingArticle.time,
+    });
+    saveReadHistory(history);
+    pendingArticle = null;
+  }
+  document.getElementById('readModal').style.display = 'none';
+  renderNews();
+  updateDashBtnCount();
+}
+
+function dismissModal() {
+  pendingArticle = null;
+  document.removeEventListener('visibilitychange', onReturnToTab);
+  document.getElementById('readModal').style.display = 'none';
+}
+
+function updateDashBtnCount() {
+  const today = new Date().toISOString().slice(0, 10);
+  const todayCount = getReadHistory().filter(r => r.readAt.slice(0, 10) === today).length;
+  document.getElementById('dashBtnLabel').textContent = todayCount > 0 ? `Tracker (${todayCount})` : 'Tracker';
+}
+
+// ============================================================
+// READING DASHBOARD
+// ============================================================
+
+let dashOpen = false;
+let dashPeriod = 'day';
+
+function toggleDashboard() {
+  dashOpen = !dashOpen;
+  const panel = document.getElementById('dashPanel');
+  if (dashOpen) {
+    panel.style.display = 'block';
+    renderDashboard();
+  } else {
+    panel.style.display = 'none';
+  }
+}
+
+function setDashPeriod(period) {
+  dashPeriod = period;
+  renderDashboard();
+}
+
+function renderDashboard() {
+  const body = document.getElementById('dashBody');
+  const history = getReadHistory();
+  const now = new Date();
+
+  // Filter by period
+  let filtered;
+  let periodLabel;
+  if (dashPeriod === 'day') {
+    const today = now.toISOString().slice(0, 10);
+    filtered = history.filter(r => r.readAt.slice(0, 10) === today);
+    periodLabel = 'Today';
+  } else if (dashPeriod === 'week') {
+    const weekAgo = new Date(now - 7 * 86400000).toISOString();
+    filtered = history.filter(r => r.readAt >= weekAgo);
+    periodLabel = 'Last 7 days';
+  } else {
+    const yearStart = now.getFullYear() + '-01-01';
+    filtered = history.filter(r => r.readAt >= yearStart);
+    periodLabel = now.getFullYear().toString();
+  }
+
+  // Category breakdown
+  const catCounts = {};
+  for (const r of filtered) {
+    catCounts[r.category] = (catCounts[r.category] || 0) + 1;
+  }
+  const maxCat = Math.max(1, ...Object.values(catCounts));
+
+  let html = '';
+
+  // Period tabs
+  html += `<div class="dash-period-tabs">
+    <button class="dash-period-tab${dashPeriod==='day'?' active':''}" onclick="setDashPeriod('day')">Today</button>
+    <button class="dash-period-tab${dashPeriod==='week'?' active':''}" onclick="setDashPeriod('week')">This week</button>
+    <button class="dash-period-tab${dashPeriod==='year'?' active':''}" onclick="setDashPeriod('year')">This year</button>
+  </div>`;
+
+  // Stats
+  html += `<div class="dash-stat-grid">
+    <div class="dash-stat">
+      <div class="dash-stat-label">Articles read</div>
+      <div class="dash-stat-val">${filtered.length}</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-label">Categories</div>
+      <div class="dash-stat-val">${Object.keys(catCounts).length}</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-label">All time total</div>
+      <div class="dash-stat-val">${history.length}</div>
+    </div>
+    <div class="dash-stat">
+      <div class="dash-stat-label">Period</div>
+      <div class="dash-stat-val" style="font-size:0.9rem">${periodLabel}</div>
+    </div>
+  </div>`;
+
+  // Category bars
+  if (Object.keys(catCounts).length > 0) {
+    html += '<div class="dash-section-title">By category</div>';
+    const sorted = Object.entries(catCounts).sort((a,b) => b[1] - a[1]);
+    for (const [cat, count] of sorted) {
+      const pct = Math.round((count / maxCat) * 100);
+      html += `<div class="dash-cat-bar">
+        <span class="dash-cat-name">${cat}</span>
+        <div class="dash-cat-fill-wrap"><div class="dash-cat-fill" style="width:${pct}%;background:var(--tag-${cat}-t,var(--accent))"></div></div>
+        <span class="dash-cat-count">${count}</span>
+      </div>`;
+    }
+  }
+
+  // Read history list
+  html += '<div class="dash-section-title">Read articles</div>';
+  if (filtered.length === 0) {
+    html += '<div class="dash-empty">No articles read in this period.</div>';
+  } else {
+    const reversed = [...filtered].reverse();
+    for (const r of reversed.slice(0, 50)) {
+      const d = new Date(r.readAt);
+      const timeStr = dashPeriod === 'day'
+        ? d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        : d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      html += `<div class="dash-history-item">
+        <span class="dash-history-date">${timeStr}</span>
+        <span class="dash-history-title" onclick="window.open('${r.url}','_blank')">${escapeHtml(r.title)}</span>
+        <span class="dash-history-cat category-tag cat-${r.category}">${r.category}</span>
+      </div>`;
+    }
+    if (reversed.length > 50) {
+      html += `<div class="dash-empty">...and ${reversed.length - 50} more</div>`;
+    }
+  }
+
+  // Clear data option
+  html += `<div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
+    <button class="modal-btn" style="width:100%;font-size:0.72rem" onclick="if(confirm('Clear all reading history?')){saveReadHistory([]);renderDashboard();renderNews();updateDashBtnCount()}">Clear all history</button>
+  </div>`;
+
+  body.innerHTML = html;
+}
+
+// Initialize counter on load
+updateDashBtnCount();
 </script>
+
+<div class="modal-overlay" id="readModal" style="display:none" onclick="if(event.target===this)dismissModal()">
+  <div class="modal">
+    <div class="modal-title">Did you finish reading?</div>
+    <div class="modal-subtitle" id="modalArticleTitle"></div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="dismissModal()">Not yet</button>
+      <button class="modal-btn modal-btn-primary" onclick="confirmRead()">Yes, mark as read</button>
+    </div>
+  </div>
+</div>
+
+<div class="dash-overlay" id="dashPanel" style="display:none">
+  <div class="dash-header">
+    <span class="dash-title">Reading tracker</span>
+    <div class="dash-close" onclick="toggleDashboard()">&times;</div>
+  </div>
+  <div class="dash-body" id="dashBody"></div>
+</div>
+
 </body>
 </html>
