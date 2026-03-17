@@ -489,6 +489,18 @@ const RSS_FEEDS = {
     { url: 'https://openai.com/news/rss.xml', cat: 'ai', src: 'OpenAI' },
     // MS Excel
     { url: 'https://techcommunity.microsoft.com/plugins/custom/microsoft/o365/custom-blog-rss?board=ExcelBlog&size=10', cat: 'excel', src: 'MS Excel Blog' },
+    // Options Market — Barchart + Yahoo Finance
+    { url: 'https://www.barchart.com/news/rss/options', cat: 'options', src: 'Barchart Options' },
+    { url: 'https://www.barchart.com/news/rss/futures', cat: 'options', src: 'Barchart Futures' },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=CBOE&region=US&lang=en-US', cat: 'options', src: 'Cboe (Yahoo)' },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=NDAQ&region=US&lang=en-US', cat: 'options', src: 'Nasdaq (Yahoo)' },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=ICE&region=US&lang=en-US', cat: 'options', src: 'ICE (Yahoo)' },
+    { url: 'https://feeds.finance.yahoo.com/rss/2.0/headline?s=%5EVIX&region=US&lang=en-US', cat: 'options', src: 'VIX (Yahoo)' },
+    // Forex Market — investingLive + DailyForex
+    { url: 'https://www.forexlive.com/feed/', cat: 'forex', src: 'investingLive' },
+    { url: 'https://www.dailyforex.com/rss/forexnews.xml', cat: 'forex', src: 'DailyForex News' },
+    { url: 'https://www.dailyforex.com/rss/fundamentalanalysis.xml', cat: 'forex', src: 'DailyForex Analysis' },
+    { url: 'https://www.dailyforex.com/rss/technicalanalysis.xml', cat: 'forex', src: 'DailyForex Technical' },
   ],
 };
 
@@ -496,8 +508,8 @@ const CATEGORY_KEYWORDS = {
   finance: ['finance','economy','economic','bank','central bank','gdp','inflation','interest rate','fiscal','monetary','imf','world bank','debt','bond','yield','treasury','federal reserve','rbi','ecb','revenue','profit','quarterly','ird','inland revenue','tax clearance','vat','excise','customs','revenue collection','pan','taxpayer'],
   money: ['money','personal finance','savings','investment tip','wealth','tax','income tax','retirement','pension','insurance','loan','mortgage','credit card','budget','salary','wage','tax return','tax filing','tds','tax deduction'],
   stocks: ['stock','share price','equity','s&p','nasdaq','dow jones','nifty','sensex','ipo','earnings','market cap','bull market','bear market','rally','crash','dividend','index fund','bse','nyse','ftse','wall street','nepse','share','bonus share','right share','ipo','fpo','hydropower','laghubitta','microfinance','broker','demat','meroshare','floorsheet','turnover','circuit','sub-index','sectoral'],
-  options: ['option','options trading','derivative','put option','call option','strike price','expiry','volatility','vix','futures','swap','hedge','straddle','strangle'],
-  forex: ['forex','currency','exchange rate','dollar','euro','pound','yen','rupee','dirham','rial','fx market','usd','eur','gbp','jpy','inr','aed','forex trading'],
+  options: ['option','options market','options trading','derivative','put option','call option','strike price','expiry','expiration','volatility','vix','implied volatility','futures','swap','hedge','straddle','strangle','iron condor','spread','cboe','eurex','ice exchange','intercontinental exchange','nse option','nse derivative','index option','equity option','weekly expiry','open interest','options chain','options volume','greeks','delta','gamma','theta','vega','premium'],
+  forex: ['forex','foreign exchange','fx market','currency','exchange rate','dollar','euro','pound','yen','rupee','dirham','rial','usd','eur','gbp','jpy','inr','aed','cny','chf','aud','cad','nzd','forex trading','currency pair','pip','spread','central bank rate','carry trade','fx trading','currency market','spot rate','forward rate','swap rate','currency intervention','dxy','dollar index','forex broker','currency futures','fx volatility'],
   war: ['war','conflict','military','attack','strike','bomb','missile','ceasefire','troops','army','navy','defense','defence','battle','invasion','hamas','hezbollah','casualt','weapon','sanction','nuclear','drone','airstrike','siege','refugee','hostage','gaza','ukraine','russia'],
   election: ['election','vote','ballot','campaign','candidate','poll','parliament','congress','senate','minister','president','governor','political','politics','party','coalition','opposition','legislation','law','bill','reform','democrat','republican','bjp','labour','conservative'],
   sports: ['sport','football','soccer','cricket','basketball','tennis','golf','nba','nfl','premier league','ipl','fifa','olympic','championship','tournament','match result','game','score','goal','win','defeat','playoff','league','athlete','coach','epl','la liga','serie a','world cup'],
@@ -549,6 +561,33 @@ const SCRAPE_SITES = [
     baseUrl: 'https://www.therundown.ai',
     selectors: {
       articles: 'a[href*="/p/"], article a',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://www.cboe.com/insights/',
+    country: 'global', cat: 'options', src: 'Cboe Insights',
+    baseUrl: 'https://www.cboe.com',
+    selectors: {
+      articles: 'a[href*="/insights/"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://www.eurex.com/ex-en/find/news',
+    country: 'global', cat: 'options', src: 'Eurex Exchange',
+    baseUrl: 'https://www.eurex.com',
+    selectors: {
+      articles: 'a[href*="/news/"], a[href*="/find/news"]',
+      titleFromText: true,
+    }
+  },
+  {
+    url: 'https://www.nseindia.com/market-data/live-equity-market',
+    country: 'in', cat: 'options', src: 'NSE India',
+    baseUrl: 'https://www.nseindia.com',
+    selectors: {
+      articles: 'a[href*="/market-data/"], a[href*="/companies/"]',
       titleFromText: true,
     }
   },
